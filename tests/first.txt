@@ -1,0 +1,11 @@
+class Program {
+    int a;
+    int b;
+    int c;
+    b = 2;
+    void metodito() {
+        a = 0;
+        b = 2;
+        c = a + b;
+    }
+}
