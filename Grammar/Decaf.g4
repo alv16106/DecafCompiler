@@ -21,16 +21,21 @@ declaration
     : structDeclaration
     | varDeclaration 
     | methodDeclaration 
+    | structDeclaration
     ;
 
 varDeclaration
-    : varType ID ';' 
-    | varType ID '[' NUM ']' ';' 
+    : vType=varType name=ID ';' #singleVar
+    | vType=varType name=ID '[' size=NUM ']' ';' #listVar
     ;
 
 structDeclaration
     : 
-    'struct' ID '{' (varDeclaration)* '}' 
+    'struct' name=ID '{' (varDeclaration)* '}' 
+    ;
+
+structInstantiation
+    : 'struct' struct=ID name=ID
     ;
 
 varType
@@ -43,7 +48,7 @@ varType
     ;
 
 methodDeclaration
-    : methodType ID '(' (parameter (',' parameter)*)* ')' block 
+    : returnType=methodType name=ID '(' (parameter (',' parameter)*)* ')' block 
     ;
 
 methodType
@@ -54,8 +59,8 @@ methodType
     ;
 
 parameter
-    : parameterType ID 
-    | parameterType ID '[' ']' 
+    : vType=parameterType name=ID 
+    | vType=parameterType name=ID '[' ']' 
     ;
 
 parameterType
@@ -69,17 +74,33 @@ block
     ;
 
 statement
-    : 'if' '(' expression ')' block ('else' block)?
-    | 'while' '(' expression ')' block 
-    | 'return' (expression)? ';' 
+    : ifStmt
+    | whileStmt
+    | returnStmt
     | methodCall ';' 
     | block 
-    | location '=' expression 
+    | assignStmt 
     | (expression)? ';' 
     ;
 
+ifStmt
+    : 'if' '(' expression ')' block ('else' block)?
+    ;
+
+whileStmt
+    : 'while' '(' expression ')' block
+    ;
+
+assignStmt
+    : left=location '=' right=expression
+    ;
+
+returnStmt
+    : 'return' (expression)? ';'
+    ;
+
 location
-    : (ID | ID '[' expression ']') ('.' location)? ;
+    : (name=ID | name=ID '[' expr=expression ']') ('.' loc=location)? ;
 
 expression
     : location 
@@ -92,7 +113,7 @@ expression
     ;
 
 methodCall
-    : ID '(' (arg (',' arg)*)* ')' 
+    : method=ID '(' (arg (',' arg)*)* ')' 
     ;
 
 arg
@@ -100,18 +121,22 @@ arg
     expression ;
 
 op
-    : arith_op 
+    : higher_arith_op 
+    | arith_op
     | rel_op
     | eq_op 
     | cond_op 
     ;
 
+higher_arith_op
+    : '*' 
+    | '/' 
+    | '%' 
+    ;
+
 arith_op
     : '+' 
     | '-' 
-    | '*' 
-    | '/' 
-    | '%' 
     ;
 
 rel_op

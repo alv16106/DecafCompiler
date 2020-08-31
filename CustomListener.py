@@ -3,34 +3,33 @@ from Grammar.DecafListener import DecafListener
 from Grammar.DecafParser import DecafParser
 from stack import DecafStack
 from AST import ASTNode, node_enum
+from symbolTable import *
 import collections
 
 # Custom listener to populate ast
 class CustomListener(DecafListener):
 
     def __init__(self):
-        self.stack = DecafStack()
+        self.scope = DecafStack()
         self.ast_stack = DecafStack()
         self.flag = False
         self.symbolTable = collections.OrderedDict()
         self.errorNames = []
-        print('ay lmao')
 
     def error(self):
         self.flag = True
     
     def enterScope(self, name):
-
-        self.symbolTable[name] = collections.OrderedDict()
-        self.stack.push(name)
+        parent = self.scope.peek()
+        self.symbolTable[name] = STable(name, parent=self.symbolTable[parent])
+        self.scope.push(name)
 
     # pops the current scope off the stack
     def exitScope(self):
-        if self.stack.isEmpty():
+        if self.scope.isEmpty():
             pass
         else:
-            popped_scope = self.stack.pop()
-            return popped_scope
+            return self.scope.pop()
 
     # getError method to return error message as string
     def getError(self, name):
@@ -62,9 +61,11 @@ class CustomListener(DecafListener):
         v_type = ctx.getChild(0).getText()
         name= ctx.getChild(1).getText()
         print('Variable de tipo:', v_type, 'Con nombre:', name)
-        _scope = self.stack.peek()
+        scope = self.scope.peek()
 
         #TODO: add to symbol table
+        s = Symbol(name, v_type)
+        self.symbolTable[scope].add(name, s)
 
     # Exit a parse tree produced by DecafParser#varDeclaration.
     def exitVarDeclaration(self, ctx:DecafParser.VarDeclarationContext):
