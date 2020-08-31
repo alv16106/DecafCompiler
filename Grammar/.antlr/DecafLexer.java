@@ -1,4 +1,4 @@
-// Generated from /home/rodrigo/Documents/UVG/Compis/Proyecto0/Grammar/Decaf.g4 by ANTLR 4.8
+// Generated from /home/rodrigo/Documents/UVG/Compis/DecafCompiler/Grammar/Decaf.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

@@ -1,16 +1,17 @@
 from enum import Enum
 
 class type_enum(Enum):
-    String = 0
+    Char = 0
     Boolean = 1
     Integer = 2
     Float = 3
 
 class STable:
-    def __init__(self, name='', entrys={}, parent=None):
+    def __init__(self, name='', entrys={}, parent=None, stype='scope'):
         self.name = name
         self.entrys = entrys
         self.parent = parent
+        self.type = stype
     
     def lookup(self, name):
         if name not in self.entrys:
@@ -42,3 +43,27 @@ class TypeItem:
     
     def addParam(self, param):
         self.paramlist.append(param)
+
+class TypeTable:
+    def __init__(self):
+        self.entrys = {}
+        self.entrys['char'] = TypeItem('String', 1)
+        self.entrys['int'] = TypeItem('Integer', 4)
+        self.entrys['bool'] = TypeItem('Integer', 1)
+        self.entrys['float'] = TypeItem('Integer', 8)
+
+
+    def add(self, name, t):
+        self.entrys[name] = t
+    
+    def getSize(self, name):
+        if name in self.entrys:
+            return self.entrys[name].size
+
+        return None
+
+    def getParams(self, name):
+        if name in self.entrys:
+            return self.entrys[name].paramlist
+
+        return None

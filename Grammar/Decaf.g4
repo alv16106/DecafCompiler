@@ -21,7 +21,7 @@ declaration
     : structDeclaration
     | varDeclaration 
     | methodDeclaration 
-    | structDeclaration
+    | structInstantiation
     ;
 
 varDeclaration

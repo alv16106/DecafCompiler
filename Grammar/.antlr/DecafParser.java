@@ -1,4 +1,4 @@
-// Generated from /home/rodrigo/Documents/UVG/Compis/Proyecto0/Grammar/Decaf.g4 by ANTLR 4.8
+// Generated from /home/rodrigo/Documents/UVG/Compis/DecafCompiler/Grammar/Decaf.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -177,6 +177,9 @@ public class DecafParser extends Parser {
 		public MethodDeclarationContext methodDeclaration() {
 			return getRuleContext(MethodDeclarationContext.class,0);
 		}
+		public StructInstantiationContext structInstantiation() {
+			return getRuleContext(StructInstantiationContext.class,0);
+		}
 		public DeclarationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -215,7 +218,7 @@ public class DecafParser extends Parser {
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(74);
-				structDeclaration();
+				structInstantiation();
 				}
 				break;
 			}
@@ -1832,7 +1835,7 @@ public class DecafParser extends Parser {
 		"\2\64\u0110\3\2\2\2\66\u0115\3\2\2\28\u0117\3\2\2\2:\u0119\3\2\2\2<\u011b"+
 		"\3\2\2\2>?\7\3\2\2?@\7\4\2\2@D\7\5\2\2AC\5\4\3\2BA\3\2\2\2CF\3\2\2\2D"+
 		"B\3\2\2\2DE\3\2\2\2EG\3\2\2\2FD\3\2\2\2GH\7\6\2\2H\3\3\2\2\2IN\5\b\5\2"+
-		"JN\5\6\4\2KN\5\16\b\2LN\5\b\5\2MI\3\2\2\2MJ\3\2\2\2MK\3\2\2\2ML\3\2\2"+
+		"JN\5\6\4\2KN\5\16\b\2LN\5\n\6\2MI\3\2\2\2MJ\3\2\2\2MK\3\2\2\2ML\3\2\2"+
 		"\2N\5\3\2\2\2OP\5\f\7\2PQ\7(\2\2QR\7\7\2\2R[\3\2\2\2ST\5\f\7\2TU\7(\2"+
 		"\2UV\7\b\2\2VW\7)\2\2WX\7\t\2\2XY\7\7\2\2Y[\3\2\2\2ZO\3\2\2\2ZS\3\2\2"+
 		"\2[\7\3\2\2\2\\]\7\n\2\2]^\7(\2\2^b\7\5\2\2_a\5\6\4\2`_\3\2\2\2ad\3\2"+
