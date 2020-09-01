@@ -16,9 +16,9 @@ class CustomVisitor(DecafVisitor):
     def error(self):
         self.flag = True
     
-    def enterScope(self, name):
+    def enterScope(self, name, t='scope'):
         parent = self.scope.peek()
-        st = STable(name, parent=parent)
+        st = STable(name, parent=parent, stype=t)
         self.scope.push(st)
 
     # pops the current scope off the stack
@@ -75,8 +75,17 @@ class CustomVisitor(DecafVisitor):
 
     # Visit a parse tree produced by DecafParser#structDeclaration.
     def visitStructDeclaration(self, ctx:DecafParser.StructDeclarationContext):
-        return self.visitChildren(ctx)
+        name = str(ctx.ID())
+        scope = self.scope.peek()
 
+        self.enterScope(name, 'struct')
+
+        s = TypeItem(name, 0, [])
+
+        visited = self.visitChildren(ctx)
+
+        self.exitScope()
+        return visited
 
     # Visit a parse tree produced by DecafParser#structInstantiation.
     def visitStructInstantiation(self, ctx:DecafParser.StructInstantiationContext):
