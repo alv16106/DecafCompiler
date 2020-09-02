@@ -43,12 +43,29 @@ class CustomVisitor(DecafVisitor):
         # if is inside struct
         if scope.stype == 'struct':
             # add to type table under structs name
-            pass
+            tt = scope.parent.typeTable
+            param = Symbol(name, vartype, 0)
+
+            # Add size and parameter to struct type in parent scope
+            tt.addSize(name, tt.getSize(vartype))
+            tt.addParam(scope.name, param)
+            return self.visitChildren(ctx)
 
         # if is struct declaration
-        if 'struct' in vartype:
-            # add struct to type table
-            pass
+        elif 'struct' in vartype:
+            # add struct to symbol table
+            sName = name.replace('struct', '')
+
+            struct = Symbol(name, sName, self.offset)
+            scope.add(name, struct)
+
+            structParams = scope.typeTable.getParams(sName)
+            for param in structParams:
+                s = Symbol(sName + param.name, param.stype, self.offset)
+                self.offset += self.typeTable.getSize(vartype)
+                scope.add(sName + param.name, s)
+            
+            return self.visitChildren(ctx)
 
         #else is just normal var, add symbol to table
         s = Symbol(name, vartype, self.offset)
@@ -81,7 +98,7 @@ class CustomVisitor(DecafVisitor):
         self.enterScope(name, 'struct')
 
         s = TypeItem(name, 0, [])
-
+        scope.addType(s)
         visited = self.visitChildren(ctx)
 
         self.exitScope()
@@ -89,4 +106,12 @@ class CustomVisitor(DecafVisitor):
 
     # Visit a parse tree produced by DecafParser#structInstantiation.
     def visitStructInstantiation(self, ctx:DecafParser.StructInstantiationContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by DecafParser#methodDeclaration.
+    def visitMethodDeclaration(self, ctx:DecafParser.MethodDeclarationContext):
+        return self.visitChildren(ctx)
+    
+    # Visit a parse tree produced by DecafParser#parameter.
+    def visitParameter(self, ctx:DecafParser.ParameterContext):
         return self.visitChildren(ctx)

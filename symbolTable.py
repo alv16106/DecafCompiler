@@ -28,8 +28,8 @@ class STable:
         if name in self.entrys:
             del self.entrys[name]
     
-    def addType(self, type):
-        self.typeTable
+    def addType(self, t):
+        self.typeTable.add(t)
 
 class Symbol:
     def __init__(self, name, stype, offset=0, param=False):
@@ -59,6 +59,12 @@ class TypeTable:
     def addParam(self, name, param):
         if name in self.entrys:
             self.entrys[name].addParam(param)
+            return True
+        return False
+
+    def addSize(self, name, size):
+        if name in self.entrys:
+            self.entrys[name].size += size
             return True
         return False
 
