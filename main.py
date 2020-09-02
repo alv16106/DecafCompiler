@@ -4,7 +4,7 @@ from antlr4 import *
 from printer import get_tree
 from Grammar.DecafLexer import DecafLexer
 from Grammar.DecafParser import DecafParser
-from CustomListener import CustomListener
+from CustomVisitor import CustomVisitor
 
 def main(argv):
     input = FileStream(argv[1])
@@ -12,11 +12,9 @@ def main(argv):
     stream = CommonTokenStream(lexer)
     parser = DecafParser(stream)
     tree = parser.program()
-    listener = CustomListener()
-    walker = ParseTreeWalker()
 
-    # creates the symbol table, and the ast tree
-    walker.walk(listener, tree)
+    visitor = CustomVisitor()
+    visitor.visit(tree)
 
     (view, _) = get_tree(tree)
     view.view()

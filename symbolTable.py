@@ -4,7 +4,6 @@ class type_enum(Enum):
     Char = 0
     Boolean = 1
     Integer = 2
-    Float = 3
 
 class STable:
     def __init__(self, name='', entrys={}, parent=None, tt=None, stype='scope'):
@@ -21,8 +20,8 @@ class STable:
             return False
         return self.entrys[name]
         
-    def add(self, name, symbol):
-        self.entrys[name] = symbol
+    def add(self, symbol):
+        self.entrys[symbol.name] = symbol
         
     def delete(self, name):
         if name in self.entrys:
@@ -40,10 +39,12 @@ class Symbol:
 
 
 class TypeItem:
-    def __init__(self, name, size, paramlist={}):
+    def __init__(self, name, size, type='struct', paramlist={}, ret=None):
         self.name = name
         self.size = size
         self.paramlist = paramlist
+        self.type = type
+        self.ret = ret
     
     def addParam(self, param):
         self.paramlist[param.name] = param
@@ -54,7 +55,6 @@ class TypeTable:
         self.entrys['char'] = TypeItem('String', 1)
         self.entrys['int'] = TypeItem('Integer', 4)
         self.entrys['bool'] = TypeItem('Boolean', 1)
-        self.entrys['float'] = TypeItem('Float', 8)
 
     def addParam(self, name, param):
         if name in self.entrys:

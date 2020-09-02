@@ -57,20 +57,20 @@ class CustomVisitor(DecafVisitor):
             sName = name.replace('struct', '')
 
             struct = Symbol(name, sName, self.offset)
-            scope.add(name, struct)
+            scope.add(struct)
 
             structParams = scope.typeTable.getParams(sName)
             for param in structParams:
                 s = Symbol(sName + param.name, param.stype, self.offset)
                 self.offset += self.typeTable.getSize(vartype)
-                scope.add(sName + param.name, s)
+                scope.add(s)
             
             return self.visitChildren(ctx)
 
         #else is just normal var, add symbol to table
         s = Symbol(name, vartype, self.offset)
         self.offset += self.typeTable.getSize(vartype)
-        scope.add(name, s)
+        scope.add(s)
 
         return self.visitChildren(ctx)
 
@@ -85,7 +85,7 @@ class CustomVisitor(DecafVisitor):
 
         s = Symbol(name, vartype, self.offset)
         self.offset += (self.typeTable.getSize(vartype) * size)
-        scope.add(name, s)
+        scope.add(s)
 
         return self.visitChildren(ctx)
 
@@ -97,21 +97,48 @@ class CustomVisitor(DecafVisitor):
 
         self.enterScope(name, 'struct')
 
-        s = TypeItem(name, 0, [])
+        s = TypeItem(name, 0, 'struct', {})
         scope.addType(s)
         visited = self.visitChildren(ctx)
 
         self.exitScope()
         return visited
 
-    # Visit a parse tree produced by DecafParser#structInstantiation.
-    def visitStructInstantiation(self, ctx:DecafParser.StructInstantiationContext):
-        return self.visitChildren(ctx)
 
     # Visit a parse tree produced by DecafParser#methodDeclaration.
     def visitMethodDeclaration(self, ctx:DecafParser.MethodDeclarationContext):
-        return self.visitChildren(ctx)
+        name = str(ctx.ID())
+        scope = self.scope.peek()
+        returnType = ctx.returnType.getText()
+        
+        s = TypeItem(name, 0, 'method', {}, returnType)
+        
+        for param in ctx.parameter():
+            values = self.visitParameter(param)
+            s.addParam(values)
+
+        scope.addType(s)
+
+        # enter method scope
+        self.enterScope(name, 'method')
+
+        # visit
+        visit = self.visitChildren(ctx)
+
+        self.exitScope()
+        
+        return visit
     
     # Visit a parse tree produced by DecafParser#parameter.
     def visitParameter(self, ctx:DecafParser.ParameterContext):
-        return self.visitChildren(ctx)
+        name = str(ctx.ID())
+        scope = self.scope.peek()
+        vartype = ctx.vType.getText()
+        
+        s = Symbol(name, vartype, self.offset)
+
+        scope.add(s)
+
+        v = self.visitChildren(ctx)
+
+        return s
