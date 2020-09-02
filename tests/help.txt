@@ -1,21 +1,21 @@
 class Program {
     int a;
     struct nani {
-        int sub_nani;
+        int subnani;
     }
     int suma(int num1, int num2){
         int num3;
-        num 3 = num1 + num2;
+        num3 = num1 + num2;
         return num3;
     }
     void why(int nani) {
         int c;
         int b;
         int d[2];
-        boolean el_bool;
+        boolean elbool;
         a = 0;
         b = 2;
-        el_bool = true;
+        elbool = true;
         c = a + b;
         return a;
     }

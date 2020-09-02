@@ -39,7 +39,7 @@ class Symbol:
 
 
 class TypeItem:
-    def __init__(self, name, size, type='struct', paramlist={}, ret=None):
+    def __init__(self, name, size=0, type='struct', paramlist={}, ret=None):
         self.name = name
         self.size = size
         self.paramlist = paramlist
@@ -54,7 +54,7 @@ class TypeTable:
         self.entrys = {}
         self.entrys['char'] = TypeItem('String', 1)
         self.entrys['int'] = TypeItem('Integer', 4)
-        self.entrys['bool'] = TypeItem('Boolean', 1)
+        self.entrys['boolean'] = TypeItem('Boolean', 1)
 
     def addParam(self, name, param):
         if name in self.entrys:
@@ -68,8 +68,8 @@ class TypeTable:
             return True
         return False
 
-    def add(self, name, t):
-        self.entrys[name] = t
+    def add(self, t):
+        self.entrys[t.name] = t
     
     def getSize(self, name):
         if name in self.entrys:

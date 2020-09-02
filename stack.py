@@ -13,7 +13,7 @@ class DecafStack:
         return self.items.pop()
 
     def peek(self):
-        if self:
+        if self.items:
             return self.items[len(self.items)-1]
         else:
             print("Stack is empty")

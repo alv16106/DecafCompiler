@@ -10,7 +10,6 @@ class CustomVisitor(DecafVisitor):
     def __init__(self):
         self.scope = DecafStack()
         self.errors = []
-        self.typeTable = TypeTable()
         self.offset = 0
 
     def error(self):
@@ -18,8 +17,9 @@ class CustomVisitor(DecafVisitor):
     
     def enterScope(self, name, t='scope'):
         parent = self.scope.peek()
-        st = STable(name, parent=parent, stype=t)
+        st = STable(name, parent=parent, stype=t, tt=TypeTable())
         self.scope.push(st)
+        print('entering scope', name)
 
     # pops the current scope off the stack
     def exitScope(self):
@@ -34,6 +34,12 @@ class CustomVisitor(DecafVisitor):
 
 
     #Inicio de los metodos que si hacen algo
+
+    # Visit a parse tree produced by DecafParser#program.
+    def visitProgram(self, ctx:DecafParser.ProgramContext):
+        self.enterScope('GLOBAL')
+        return self.visitChildren(ctx)
+
     # Visit a parse tree produced by DecafParser#singleVar.
     def visitSingleVar(self, ctx:DecafParser.SingleVarContext):
         name = str(ctx.ID())
@@ -41,7 +47,7 @@ class CustomVisitor(DecafVisitor):
         vartype = ctx.vType.getText()
 
         # if is inside struct
-        if scope.stype == 'struct':
+        if scope.scopeType == 'struct':
             # add to type table under structs name
             tt = scope.parent.typeTable
             param = Symbol(name, vartype, 0)
@@ -62,14 +68,15 @@ class CustomVisitor(DecafVisitor):
             structParams = scope.typeTable.getParams(sName)
             for param in structParams:
                 s = Symbol(sName + param.name, param.stype, self.offset)
-                self.offset += self.typeTable.getSize(vartype)
+                self.offset += scope.typeTable.getSize(vartype)
                 scope.add(s)
             
             return self.visitChildren(ctx)
 
         #else is just normal var, add symbol to table
         s = Symbol(name, vartype, self.offset)
-        self.offset += self.typeTable.getSize(vartype)
+        print(scope.typeTable.entrys['int'].size)
+        self.offset += scope.typeTable.getSize(vartype)
         scope.add(s)
 
         return self.visitChildren(ctx)
@@ -81,10 +88,11 @@ class CustomVisitor(DecafVisitor):
         scope = self.scope.peek()
         vartype = ctx.vType.getText()
 
-        size = int(ctx.size.getText())
+        size = int(str(ctx.NUM()))
 
         s = Symbol(name, vartype, self.offset)
-        self.offset += (self.typeTable.getSize(vartype) * size)
+        print(scope.typeTable.entrys['int'])
+        self.offset += (scope.typeTable.getSize(vartype) * size)
         scope.add(s)
 
         return self.visitChildren(ctx)
