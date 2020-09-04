@@ -7,7 +7,10 @@ from Grammar.DecafParser import DecafParser
 from CustomVisitor import CustomVisitor
 
 def main(argv):
-    input = FileStream(argv[1])
+    file = "tests/help.txt"
+    if len(argv) > 1:
+        file = argv[1]
+    input = FileStream(file)
     lexer = DecafLexer(input)
     stream = CommonTokenStream(lexer)
     parser = DecafParser(stream)
@@ -15,6 +18,8 @@ def main(argv):
 
     visitor = CustomVisitor()
     visitor.visit(tree)
+
+    print(visitor.scope.peek().entrys)
 
     (view, _) = get_tree(tree)
     view.view()

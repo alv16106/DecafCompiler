@@ -8,7 +8,7 @@ class Program {
         num3 = num1 + num2;
         return num3;
     }
-    void why(int nani) {
+    void why(int param1) {
         int c;
         int b;
         int d[2];
@@ -17,6 +17,9 @@ class Program {
         b = 2;
         elbool = true;
         c = a + b;
+        if(a==0) {
+            int x;
+        }
         return a;
     }
 }

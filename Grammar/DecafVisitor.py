@@ -99,8 +99,58 @@ class DecafVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by DecafParser#expression.
-    def visitExpression(self, ctx:DecafParser.ExpressionContext):
+    # Visit a parse tree produced by DecafParser#relationOp.
+    def visitRelationOp(self, ctx:DecafParser.RelationOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#methodCallExpr.
+    def visitMethodCallExpr(self, ctx:DecafParser.MethodCallExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#conditionalOp.
+    def visitConditionalOp(self, ctx:DecafParser.ConditionalOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#negationExpr.
+    def visitNegationExpr(self, ctx:DecafParser.NegationExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#locationExpr.
+    def visitLocationExpr(self, ctx:DecafParser.LocationExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#equalityOp.
+    def visitEqualityOp(self, ctx:DecafParser.EqualityOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#literalExpr.
+    def visitLiteralExpr(self, ctx:DecafParser.LiteralExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#negativeExpr.
+    def visitNegativeExpr(self, ctx:DecafParser.NegativeExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#parentExpr.
+    def visitParentExpr(self, ctx:DecafParser.ParentExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#higherArithOp.
+    def visitHigherArithOp(self, ctx:DecafParser.HigherArithOpContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by DecafParser#arithOp.
+    def visitArithOp(self, ctx:DecafParser.ArithOpContext):
         return self.visitChildren(ctx)
 
 
@@ -111,11 +161,6 @@ class DecafVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by DecafParser#arg.
     def visitArg(self, ctx:DecafParser.ArgContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by DecafParser#op.
-    def visitOp(self, ctx:DecafParser.OpContext):
         return self.visitChildren(ctx)
 
 

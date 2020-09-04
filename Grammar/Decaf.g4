@@ -103,13 +103,17 @@ location
     : (name=ID | name=ID '[' expr=expression ']') ('.' loc=location)? ;
 
 expression
-    : location 
-    | methodCall 
-    | literal
-    | expression op expression
-    | '-' expression
-    | '!' expression 
-    | '(' expression ')' 
+    : location #locationExpr
+    | methodCall #methodCallExpr
+    | literal #literalExpr
+    | left=expression op=higher_arith_op right=expression #higherArithOp
+    | left=expression op=arith_op right=expression #arithOp
+    | left=expression op=rel_op right=expression #relationOp
+    | left=expression op=eq_op right=expression #equalityOp
+    | left=expression op=cond_op right=expression #conditionalOp
+    | '-' expression #negativeExpr
+    | '!' expression #negationExpr
+    | '(' expression ')' #parentExpr
     ;
 
 methodCall
@@ -119,14 +123,6 @@ methodCall
 arg
     : 
     expression ;
-
-op
-    : higher_arith_op 
-    | arith_op
-    | rel_op
-    | eq_op 
-    | cond_op 
-    ;
 
 higher_arith_op
     : '*' 

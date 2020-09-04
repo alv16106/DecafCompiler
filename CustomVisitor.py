@@ -10,6 +10,7 @@ class CustomVisitor(DecafVisitor):
     def __init__(self):
         self.scope = DecafStack()
         self.errors = []
+        self.anonCounter = 0
         self.offset = 0
 
     def error(self):
@@ -17,7 +18,7 @@ class CustomVisitor(DecafVisitor):
     
     def enterScope(self, name, t='scope'):
         parent = self.scope.peek()
-        st = STable(name, parent=parent, stype=t, tt=TypeTable())
+        st = STable(name, parent=parent, stype=t, tt=TypeTable(), entrys={})
         self.scope.push(st)
         print('entering scope', name)
 
@@ -75,9 +76,11 @@ class CustomVisitor(DecafVisitor):
 
         #else is just normal var, add symbol to table
         s = Symbol(name, vartype, self.offset)
-        print(scope.typeTable.entrys['int'].size)
         self.offset += scope.typeTable.getSize(vartype)
+        print('Adding variable', name, 'to scope', scope.name)
+        scope.parent and print(scope.parent.entrys)
         scope.add(s)
+        scope.parent and print(scope.parent.entrys)
 
         return self.visitChildren(ctx)
 
@@ -94,6 +97,7 @@ class CustomVisitor(DecafVisitor):
         print(scope.typeTable.entrys['int'])
         self.offset += (scope.typeTable.getSize(vartype) * size)
         scope.add(s)
+        print("NANIIIIII")
 
         return self.visitChildren(ctx)
 
@@ -143,10 +147,30 @@ class CustomVisitor(DecafVisitor):
         scope = self.scope.peek()
         vartype = ctx.vType.getText()
         
-        s = Symbol(name, vartype, self.offset)
+        s = Symbol(name, vartype, self.offset, param=True)
 
         scope.add(s)
 
         v = self.visitChildren(ctx)
 
         return s
+
+    # Visit a parse tree produced by DecafParser#ifStmt.
+    def visitIfStmt(self, ctx:DecafParser.IfStmtContext):
+        self.enterScope('block' + str(self.anonCounter), 'if')
+        self.anonCounter += 1
+
+        visit = self.visitChildren(ctx)
+        
+        self.exitScope()
+        return visit
+
+    # Visit a parse tree produced by DecafParser#whileStmt.
+    def visitWhileStmt(self, ctx:DecafParser.WhileStmtContext):
+        self.enterScope('block' + str(self.anonCounter), 'if')
+        self.anonCounter += 1
+
+        visit = self.visitChildren(ctx)
+        
+        self.exitScope()
+        return visit
