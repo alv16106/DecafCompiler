@@ -64,22 +64,133 @@ class Evaluator(DecafVisitor):
             self.errors.append(error)
             return type_enum.Error
         return type_enum.Integer
+    
+    def visitAssignStmt(self, ctx:DecafParser.AssignStmtContext):
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type !=  left_type:
+            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.text.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Boolean
 
     def visitLocationExpr(self, ctx:DecafParser.LocationExprContext):
+        var_name = str(ctx.ID())
+        scope = self.scopes.peek()
+        var = scope.lookup(var_name)
+
+        if not var:
+            error = notDefinedError('variable', var_name, ctx.start.line)
+            self.errors.append(error)
+            return type_enum.Error
+        
+        if ctx.expr:
+            
+            if not var.listSize:
+                error = genericError('symbol of type %s is non suscriptable' % var.stype, ctx.start.line)
+                self.errors.append(error)
+                return type_enum.Error
+
+            num_expr = ctx.expr.getText()
+
+            try:
+                num = int(num_expr)
+                if num < 0 or (num > var.listSize - 1):
+                    error = genericError('Index out of range', ctx.start.line)
+                    self.errors.append(error)
+                    return type_enum.Error
+            except ValueError:
+                pass
+
+            visit = self.visit(ctx.expr)
+
+            if visit != type_enum.Integer:
+                error = genericError('Index must be an integer', ctx.start.line)
+                self.errors.append(error)
+                return type_enum.Error
+        
+        if ctx.loc:
+
+            struct = scope.typeExists(var.stype, 'struct')
+
+            if not struct:
+                error = genericError('Location passed but %s is not a struct' % var_name, ctx.start.line)
+                self.errors.append(error)
+                return type_enum.Error
+            
+            if ctx.loc.text not in struct.paramlist:
+                error = genericError('Location %s not defined in struct of %s of type %s' % (ctx.loc.text, var_name, var.stype), ctx.start.line)
+                self.errors.append(error)
+                return type_enum.Error
+        
         return self.visitChildren(ctx)
 
     #Operations
     def visitRelationOp(self, ctx:DecafParser.RelationOpContext):
-        return self.visitChildren(ctx)
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type != type_enum.Integer or left_type != type_enum.Integer:
+            error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Integer
     
     def visitConditionalOp(self, ctx:DecafParser.ConditionalOpContext):
-        return self.visitChildren(ctx)
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type != type_enum.Integer or left_type != type_enum.Integer:
+            error = expectedError(type_enum.Boolean, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Boolean
     
     def visitEqualityOp(self, ctx:DecafParser.EqualityOpContext):
-        return self.visitChildren(ctx)
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type !=  left_type:
+            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.text.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Boolean
     
     def visitHigherArithOp(self, ctx:DecafParser.HigherArithOpContext):
-        return self.visitChildren(ctx)
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type != type_enum.Integer or left_type != type_enum.Integer:
+            error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Integer
 
     def visitArithOp(self, ctx:DecafParser.ArithOpContext):
-        return self.visitChildren(ctx)
+        op = ctx.operator.getText()
+
+        left_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.left)
+
+        if right_type != type_enum.Integer or left_type != type_enum.Integer:
+            error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            self.errors.append(error)
+            return type_enum.Error
+
+        return type_enum.Integer

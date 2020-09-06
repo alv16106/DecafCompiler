@@ -37,11 +37,12 @@ class STable:
         return self.parent and self.parent.typeExists(t, spec)
 
 class Symbol:
-    def __init__(self, name, stype, offset=0, param=False):
+    def __init__(self, name, stype, offset=0, param=False, listSize=0):
         self.name = name
         self.stype = stype
         self.offset = offset
         self.param = param
+        self.listSize = listSize
 
 
 class TypeItem:

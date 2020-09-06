@@ -92,7 +92,7 @@ class CustomVisitor(DecafVisitor):
 
         size = int(str(ctx.NUM()))
 
-        s = Symbol(name, vartype, self.offset)
+        s = Symbol(name, vartype, self.offset, listSize=size)
         self.offset += (scope.typeTable.getSize(vartype) * size)
         scope.add(s)
 
