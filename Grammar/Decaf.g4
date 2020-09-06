@@ -9,7 +9,7 @@ ID: LETTER (LETTER | DIGIT)* ;
 
 NUM: DIGIT (DIGIT)* ;
 
-CHAR: LETTER;
+CHAR: '\'' LETTER '\'';
 
 SPACES : [ \t\r\n\f]+  ->channel(HIDDEN);
 
