@@ -1,6 +1,6 @@
 from Grammar.DecafVisitor import DecafVisitor
 from Grammar.DecafParser import DecafParser
-
+import inspect
 from stack import DecafStack
 from AST import ASTNode, node_enum
 from symbolTable import *
@@ -78,9 +78,8 @@ class CustomVisitor(DecafVisitor):
         s = Symbol(name, vartype, self.offset)
         self.offset += scope.typeTable.getSize(vartype)
         print('Adding variable', name, 'to scope', scope.name)
-        scope.parent and print(scope.parent.entrys)
+        print(ctx.start.line)
         scope.add(s)
-        scope.parent and print(scope.parent.entrys)
 
         return self.visitChildren(ctx)
 
@@ -94,10 +93,8 @@ class CustomVisitor(DecafVisitor):
         size = int(str(ctx.NUM()))
 
         s = Symbol(name, vartype, self.offset)
-        print(scope.typeTable.entrys['int'])
         self.offset += (scope.typeTable.getSize(vartype) * size)
         scope.add(s)
-        print("NANIIIIII")
 
         return self.visitChildren(ctx)
 
@@ -109,7 +106,7 @@ class CustomVisitor(DecafVisitor):
 
         self.enterScope(name, 'struct')
 
-        s = TypeItem(name, 0, 'struct', {})
+        s = TypeItem(name, 0, type_enum.Struct, {})
         scope.addType(s)
         visited = self.visitChildren(ctx)
 

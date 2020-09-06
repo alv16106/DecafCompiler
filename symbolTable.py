@@ -4,6 +4,8 @@ class type_enum(Enum):
     Char = 0
     Boolean = 1
     Integer = 2
+    Struct = 3
+    Error = 4
 
 class STable:
     def __init__(self, name='', entrys={}, parent=None, tt=None, stype='scope'):
@@ -15,9 +17,7 @@ class STable:
     
     def lookup(self, name):
         if name not in self.entrys:
-            if self.parent:
-                return self.parent.lookup(name)
-            return False
+            return self.parent and self.parent.lookup(name)
         return self.entrys[name]
         
     def add(self, symbol):
@@ -29,6 +29,12 @@ class STable:
     
     def addType(self, t):
         self.typeTable.add(t)
+
+    def typeExists(self, t, spec=None):
+        if t in self.typeTable.entrys:
+            entry = self.typeTable.entrys[t]
+            return ((entry.type == spec) or not spec) and entry
+        return self.parent and self.parent.typeExists(t, spec)
 
 class Symbol:
     def __init__(self, name, stype, offset=0, param=False):
@@ -52,9 +58,9 @@ class TypeItem:
 class TypeTable:
     def __init__(self):
         self.entrys = {}
-        self.entrys['char'] = TypeItem('String', 1)
-        self.entrys['int'] = TypeItem('Integer', 4)
-        self.entrys['boolean'] = TypeItem('Boolean', 1)
+        self.entrys['char'] = TypeItem(type_enum.Char, 1)
+        self.entrys['int'] = TypeItem(type_enum.Integer, 4)
+        self.entrys['boolean'] = TypeItem(type_enum.Boolean, 1)
 
     def addParam(self, name, param):
         if name in self.entrys:
