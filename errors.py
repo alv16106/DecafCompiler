@@ -9,3 +9,7 @@ def notDefinedError(t, name, line):
 def expectedError(expected, got, line):
     error = 'ERROR: expected %s. Got %s instead. Line %d' % (expected, got, line)
     return error
+
+def printErrors(errors):
+    for e in errors:
+        print(e)

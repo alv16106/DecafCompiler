@@ -5,6 +5,7 @@ from printer import get_tree
 from Grammar.DecafLexer import DecafLexer
 from Grammar.DecafParser import DecafParser
 from CustomVisitor import CustomVisitor
+from errors import printErrors
 
 def main(argv):
     file = "tests/help.txt"
@@ -18,6 +19,8 @@ def main(argv):
 
     visitor = CustomVisitor()
     visitor.visit(tree)
+
+    printErrors(visitor.TypeValidator.errors)
 
     print(visitor.scope.peek().entrys)
 

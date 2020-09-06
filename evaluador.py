@@ -66,27 +66,32 @@ class Evaluator(DecafVisitor):
         return type_enum.Integer
     
     def visitAssignStmt(self, ctx:DecafParser.AssignStmtContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
         right_type = self.visit(ctx.left)
 
         if right_type !=  left_type:
-            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.text.line)
+            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
         return type_enum.Boolean
 
-    def visitLocationExpr(self, ctx:DecafParser.LocationExprContext):
-        var_name = str(ctx.ID())
+    def visitLocation(self, ctx:DecafParser.LocationExprContext):
+        var_name = ctx.name.text
         scope = self.scopes.peek()
         var = scope.lookup(var_name)
+        value = type_enum.Error
+
+        print('trying location', var_name)
 
         if not var:
             error = notDefinedError('variable', var_name, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
+        
+        value = var.stype
         
         if ctx.expr:
             
@@ -126,15 +131,17 @@ class Evaluator(DecafVisitor):
                 error = genericError('Location %s not defined in struct of %s of type %s' % (ctx.loc.text, var_name, var.stype), ctx.start.line)
                 self.errors.append(error)
                 return type_enum.Error
+            
+            value = struct.paramlist[ctx.loc.text].stype
         
-        return self.visitChildren(ctx)
+        return value
 
     #Operations
     def visitRelationOp(self, ctx:DecafParser.RelationOpContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
 
         if right_type != type_enum.Integer or left_type != type_enum.Integer:
             error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
@@ -144,10 +151,10 @@ class Evaluator(DecafVisitor):
         return type_enum.Integer
     
     def visitConditionalOp(self, ctx:DecafParser.ConditionalOpContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
 
         if right_type != type_enum.Integer or left_type != type_enum.Integer:
             error = expectedError(type_enum.Boolean, '%s, %s' % (left_type, right_type) , ctx.start.line)
@@ -157,39 +164,39 @@ class Evaluator(DecafVisitor):
         return type_enum.Boolean
     
     def visitEqualityOp(self, ctx:DecafParser.EqualityOpContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
 
         if right_type !=  left_type:
-            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.text.line)
+            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
         return type_enum.Boolean
     
     def visitHigherArithOp(self, ctx:DecafParser.HigherArithOpContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
 
         if right_type != type_enum.Integer or left_type != type_enum.Integer:
-            error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            error = expectedError(type_enum.Integer, '%s %s %s' % (left_type, op, right_type) , ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
         return type_enum.Integer
 
     def visitArithOp(self, ctx:DecafParser.ArithOpContext):
-        op = ctx.operator.getText()
+        op = ctx.op.getText()
 
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
 
         if right_type != type_enum.Integer or left_type != type_enum.Integer:
-            error = expectedError(type_enum.Integer, '%s, %s' % (left_type, right_type) , ctx.start.line)
+            error = expectedError(type_enum.Integer, '%s %s %s' % (left_type, op, right_type) , ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
