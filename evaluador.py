@@ -23,18 +23,20 @@ class Evaluator(DecafVisitor):
         return type_enum.Boolean
     
     # Expressions
-    def visitMethodCallExpr(self, ctx:DecafParser.MethodCallExprContext):
+    def visitMethodCall(self, ctx:DecafParser.MethodCallExprContext):
         method_name = str(ctx.ID())
         scope = self.scopes.peek()
         method = scope.typeExists(method_name, 'method')
 
-        values = []
-        params = [param.stype for param in method.paramlist]
+        print(method_name, 'in methodCall', ctx.start.line)
 
         if not method:
             error = notDefinedError('method', method_name, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
+
+        values = []
+        params = [param.stype for param in method.paramlist.values()]
 
         for argument in ctx.arg():
             values.append(self.visitArg(argument))
@@ -66,13 +68,13 @@ class Evaluator(DecafVisitor):
         return type_enum.Integer
     
     def visitAssignStmt(self, ctx:DecafParser.AssignStmtContext):
-        op = ctx.op.getText()
-
         left_type = self.visit(ctx.left)
-        right_type = self.visit(ctx.left)
+        right_type = self.visit(ctx.right)
+
+        print(left_type, right_type)
 
         if right_type !=  left_type:
-            error = genericError('Can only apply %s to two expressions with the same type' % op, ctx.start.line)
+            error = genericError('Can only assign to two expressions with the same type', ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
@@ -83,8 +85,6 @@ class Evaluator(DecafVisitor):
         scope = self.scopes.peek()
         var = scope.lookup(var_name)
         value = type_enum.Error
-
-        print('trying location', var_name)
 
         if not var:
             error = notDefinedError('variable', var_name, ctx.start.line)
@@ -119,20 +119,19 @@ class Evaluator(DecafVisitor):
                 return type_enum.Error
         
         if ctx.loc:
-
-            struct = scope.typeExists(var.stype, 'struct')
+            struct = scope.typeExists(var.stype, type_enum.Struct)
 
             if not struct:
                 error = genericError('Location passed but %s is not a struct' % var_name, ctx.start.line)
                 self.errors.append(error)
                 return type_enum.Error
             
-            if ctx.loc.text not in struct.paramlist:
-                error = genericError('Location %s not defined in struct of %s of type %s' % (ctx.loc.text, var_name, var.stype), ctx.start.line)
+            if ctx.loc.name.text not in struct.paramlist:
+                error = genericError('Location %s not defined in struct of %s of type %s' % (ctx.loc.name.text, var_name, var.stype), ctx.start.line)
                 self.errors.append(error)
                 return type_enum.Error
             
-            value = struct.paramlist[ctx.loc.text].stype
+            value = struct.paramlist[ctx.loc.name.text].stype
         
         return value
 
@@ -148,7 +147,7 @@ class Evaluator(DecafVisitor):
             self.errors.append(error)
             return type_enum.Error
 
-        return type_enum.Integer
+        return type_enum.Boolean
     
     def visitConditionalOp(self, ctx:DecafParser.ConditionalOpContext):
         op = ctx.op.getText()

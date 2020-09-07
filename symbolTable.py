@@ -6,6 +6,7 @@ class type_enum(Enum):
     Integer = 2
     Struct = 3
     Error = 4
+    Void = 5
 
 class STable:
     def __init__(self, name='', entrys={}, parent=None, tt=None, stype='scope'):
@@ -62,6 +63,7 @@ class TypeTable:
         self.entrys['char'] = TypeItem(type_enum.Char, 1)
         self.entrys['int'] = TypeItem(type_enum.Integer, 4)
         self.entrys['boolean'] = TypeItem(type_enum.Boolean, 1)
+        self.entrys['void'] = TypeItem(type_enum.Void, 0)
 
     def addParam(self, name, param):
         if name in self.entrys:

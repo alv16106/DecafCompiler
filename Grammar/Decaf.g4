@@ -103,8 +103,8 @@ location
     : (name=ID | name=ID '[' expr=expression ']') ('.' loc=location)? ;
 
 expression
-    : location #locationExpr
-    | methodCall #methodCallExpr
+    : methodCall #methodCallExpr
+    | location #locationExpr
     | literal #literalExpr
     | left=expression op=higher_arith_op right=expression #higherArithOp
     | left=expression op=arith_op right=expression #arithOp

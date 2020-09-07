@@ -102,7 +102,7 @@ def serializedATN():
         buf.write("\u00cf\u00c9\3\2\2\2\u00cf\u00ca\3\2\2\2\u00d0\u00d3\3")
         buf.write("\2\2\2\u00d1\u00d2\7\27\2\2\u00d2\u00d4\5\"\22\2\u00d3")
         buf.write("\u00d1\3\2\2\2\u00d3\u00d4\3\2\2\2\u00d4#\3\2\2\2\u00d5")
-        buf.write("\u00d6\b\23\1\2\u00d6\u00e2\5\"\22\2\u00d7\u00e2\5&\24")
+        buf.write("\u00d6\b\23\1\2\u00d6\u00e2\5&\24\2\u00d7\u00e2\5\"\22")
         buf.write("\2\u00d8\u00e2\5\64\33\2\u00d9\u00da\7\30\2\2\u00da\u00e2")
         buf.write("\5$\23\5\u00db\u00dc\7\31\2\2\u00dc\u00e2\5$\23\4\u00dd")
         buf.write("\u00de\7\17\2\2\u00de\u00df\5$\23\2\u00df\u00e0\7\21\2")
@@ -1902,20 +1902,20 @@ class DecafParser ( Parser ):
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,16,self._ctx)
             if la_ == 1:
-                localctx = DecafParser.LocationExprContext(self, localctx)
+                localctx = DecafParser.MethodCallExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
 
                 self.state = 212
-                self.location()
+                self.methodCall()
                 pass
 
             elif la_ == 2:
-                localctx = DecafParser.MethodCallExprContext(self, localctx)
+                localctx = DecafParser.LocationExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
                 self.state = 213
-                self.methodCall()
+                self.location()
                 pass
 
             elif la_ == 3:

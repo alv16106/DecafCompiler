@@ -20,12 +20,8 @@ def main(argv):
     visitor = CustomVisitor()
     visitor.visit(tree)
 
-    printErrors(visitor.TypeValidator.errors)
-
-    print(visitor.scope.peek().entrys)
-
-    (view, _) = get_tree(tree)
-    view.view()
+    """ (view, _) = get_tree(tree)
+    view.view() """
 
 if __name__ == '__main__':
     main(sys.argv)

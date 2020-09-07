@@ -1275,21 +1275,21 @@ public class DecafParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
 			case 1:
 				{
-				_localctx = new LocationExprContext(_localctx);
+				_localctx = new MethodCallExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
 				setState(212);
-				location();
+				methodCall();
 				}
 				break;
 			case 2:
 				{
-				_localctx = new MethodCallExprContext(_localctx);
+				_localctx = new LocationExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(213);
-				methodCall();
+				location();
 				}
 				break;
 			case 3:
@@ -1970,7 +1970,7 @@ public class DecafParser extends Parser {
 		"\u00cd\5$\23\2\u00cd\u00ce\7\t\2\2\u00ce\u00d0\3\2\2\2\u00cf\u00c9\3\2"+
 		"\2\2\u00cf\u00ca\3\2\2\2\u00d0\u00d3\3\2\2\2\u00d1\u00d2\7\27\2\2\u00d2"+
 		"\u00d4\5\"\22\2\u00d3\u00d1\3\2\2\2\u00d3\u00d4\3\2\2\2\u00d4#\3\2\2\2"+
-		"\u00d5\u00d6\b\23\1\2\u00d6\u00e2\5\"\22\2\u00d7\u00e2\5&\24\2\u00d8\u00e2"+
+		"\u00d5\u00d6\b\23\1\2\u00d6\u00e2\5&\24\2\u00d7\u00e2\5\"\22\2\u00d8\u00e2"+
 		"\5\64\33\2\u00d9\u00da\7\30\2\2\u00da\u00e2\5$\23\5\u00db\u00dc\7\31\2"+
 		"\2\u00dc\u00e2\5$\23\4\u00dd\u00de\7\17\2\2\u00de\u00df\5$\23\2\u00df"+
 		"\u00e0\7\21\2\2\u00e0\u00e2\3\2\2\2\u00e1\u00d5\3\2\2\2\u00e1\u00d7\3"+

@@ -22,7 +22,6 @@ class CustomVisitor(DecafVisitor):
         parent = self.scope.peek()
         st = STable(name, parent=parent, stype=t, tt=TypeTable(), entrys={})
         self.scope.push(st)
-        print('entering scope', name)
 
     # pops the current scope off the stack
     def exitScope(self):
@@ -49,7 +48,7 @@ class CustomVisitor(DecafVisitor):
         scope = self.scope.peek()
         type_text = ctx.vType.getText()
 
-        vartype = scope.typeExists(type_text).name
+        vartype = scope.typeExists(type_text.replace('struct', '')).name
 
         # if is inside struct
         if scope.scopeType == 'struct':
@@ -65,15 +64,15 @@ class CustomVisitor(DecafVisitor):
         # if is struct declaration
         elif 'struct' in type_text:
             # add struct to symbol table
-            sName = name.replace('struct', '')
+            sName = type_text.replace('struct', '')
 
             struct = Symbol(name, sName, self.offset)
             scope.add(struct)
 
             structParams = scope.typeTable.getParams(sName)
-            for param in structParams:
+            for param in structParams.values():
                 s = Symbol(sName + param.name, param.stype, self.offset)
-                self.offset += scope.typeTable.getSize(type_text)
+                self.offset += scope.typeTable.getSize(sName)
                 scope.add(s)
             
             return self.visitChildren(ctx)
@@ -81,8 +80,6 @@ class CustomVisitor(DecafVisitor):
         #else is just normal var, add symbol to table
         s = Symbol(name, vartype, self.offset)
         self.offset += scope.typeTable.getSize(type_text)
-        print('Adding variable', name, 'to scope', scope.name)
-        print(ctx.start.line)
         scope.add(s)
 
         return self.visitChildren(ctx)
@@ -92,12 +89,21 @@ class CustomVisitor(DecafVisitor):
     def visitListVar(self, ctx:DecafParser.ListVarContext):
         name = str(ctx.ID())
         scope = self.scope.peek()
-        vartype = ctx.vType.getText()
+        vartype = ctx.vType.getText().replace('struct', '')
 
         size = int(str(ctx.NUM()))
 
+        if scope.scopeType == 'struct':
+            t = scope.parent.typeExists(vartype)
+            tt = scope.parent.typeTable
+            param = Symbol(name, t.name, 0, listSize=size)
+            
+            tt.addSize(name, t.size * size)
+            tt.addParam(scope.name, param)
+            return self.visitChildren(ctx)
+
         s = Symbol(name, vartype, self.offset, listSize=size)
-        self.offset += (scope.typeTable.getSize(vartype) * size)
+        self.offset += (scope.typeExists(vartype).size * size)
         scope.add(s)
 
         return self.visitChildren(ctx)
@@ -123,8 +129,8 @@ class CustomVisitor(DecafVisitor):
         name = str(ctx.ID())
         scope = self.scope.peek()
         returnType = ctx.returnType.getText()
-        
-        s = TypeItem(name, 0, 'method', {}, returnType)
+        print(returnType)
+        s = TypeItem(name, 0, 'method', {}, scope.typeExists(returnType).name)
         
         for param in ctx.parameter():
             values = self.visitParameter(param)
@@ -159,7 +165,7 @@ class CustomVisitor(DecafVisitor):
 
     # Visit a parse tree produced by DecafParser#ifStmt.
     def visitIfStmt(self, ctx:DecafParser.IfStmtContext):
-        self.enterScope('block' + str(self.anonCounter), 'if')
+        self.enterScope('ifblock' + str(self.anonCounter), 'if')
         self.anonCounter += 1
 
         expt = self.TypeValidator.visit(ctx.expression())
@@ -173,12 +179,15 @@ class CustomVisitor(DecafVisitor):
 
     # Visit a parse tree produced by DecafParser#whileStmt.
     def visitWhileStmt(self, ctx:DecafParser.WhileStmtContext):
-        self.enterScope('block' + str(self.anonCounter), 'if')
+        self.enterScope('whileblock' + str(self.anonCounter), 'if')
         self.anonCounter += 1
 
         expt = self.TypeValidator.visit(ctx.expression())
+
+        print(expt)
+
         if expt != type_enum.Boolean:
-            self.TypeValidator.errors.append('Expected boolean expression for if in line %s' % ctx.start.line)
+            self.TypeValidator.errors.append('ERROR: Expected boolean expression for if in line %s' % ctx.start.line)
 
         visit = self.visitChildren(ctx)
         
@@ -203,5 +212,10 @@ class CustomVisitor(DecafVisitor):
         return self.visitChildren(ctx)
 
     def visitArithOp(self, ctx:DecafParser.ArithOpContext):
+        self.TypeValidator.visit(ctx)
+        return self.visitChildren(ctx)
+    
+    #Assign
+    def visitAssignStmt(self, ctx:DecafParser.ArithOpContext):
         self.TypeValidator.visit(ctx)
         return self.visitChildren(ctx)
