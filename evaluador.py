@@ -107,8 +107,10 @@ class Evaluator(DecafVisitor):
             except ValueError:
                 pass
 
+            visit = self.visit(ctx.expr)
 
-                error = genericError('Index must be an integer', ctx.start.line)
+            if visit != type_enum.Integer:
+                error = genericError('Index must be an integer, got', ctx.start.line)
                 self.errors.append(error)
                 return type_enum.Error
         
