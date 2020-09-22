@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Tree{% endblock %}
+{% set active_page = "tree" %}
+{% block content %}
+    <iframe
+        class="frame"
+        src="{{ url_for('static',filename='img/tree.gv.pdf') }}"
+        type="application/pdf"
+        ></iframe>
+{% endblock %}

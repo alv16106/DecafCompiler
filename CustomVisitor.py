@@ -2,7 +2,7 @@ from Grammar.DecafVisitor import DecafVisitor
 from Grammar.DecafParser import DecafParser
 import inspect
 from stack import DecafStack
-from AST import ASTNode, node_enum
+from errors import genericError
 from evaluador import Evaluator
 from symbolTable import *
 
@@ -129,7 +129,6 @@ class CustomVisitor(DecafVisitor):
         name = str(ctx.ID())
         scope = self.scope.peek()
         returnType = ctx.returnType.getText()
-        print(returnType)
         s = TypeItem(name, 0, 'method', {}, scope.typeExists(returnType).name)
         
         for param in ctx.parameter():
@@ -170,7 +169,8 @@ class CustomVisitor(DecafVisitor):
 
         expt = self.TypeValidator.visit(ctx.expression())
         if expt != type_enum.Boolean:
-            self.TypeValidator.errors.append('Expected boolean expression for if in line %s' % ctx.start.line)
+            error = genericError('Expected boolean expression for if', ctx.start.line)
+            self.TypeValidator.errors.append(error)
 
         visit = self.visitChildren(ctx)
         
@@ -184,10 +184,9 @@ class CustomVisitor(DecafVisitor):
 
         expt = self.TypeValidator.visit(ctx.expression())
 
-        print(expt)
-
         if expt != type_enum.Boolean:
-            self.TypeValidator.errors.append('ERROR: Expected boolean expression for if in line %s' % ctx.start.line)
+            error = genericError('Expected boolean expression for while', ctx.start.line)
+            self.TypeValidator.errors.append(error)
 
         visit = self.visitChildren(ctx)
         

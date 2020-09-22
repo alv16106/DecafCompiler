@@ -28,10 +28,8 @@ class Evaluator(DecafVisitor):
         scope = self.scopes.peek()
         method = scope.typeExists(method_name, 'method')
 
-        print(method_name, 'in methodCall', ctx.start.line)
-
         if not method:
-            error = notDefinedError('method', method_name, ctx.start.line)
+            error = notDefinedError('Method', method_name, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
 
@@ -42,8 +40,8 @@ class Evaluator(DecafVisitor):
             values.append(self.visitArg(argument))
         
         if params != values:
-            error = expectedError(params, values, ctx.line.start)
-            self.errors.append()
+            error = expectedError(params, values, ctx.start.line)
+            self.errors.append(error)
             return type_enum.Error
             
         return method.ret
@@ -71,8 +69,6 @@ class Evaluator(DecafVisitor):
         left_type = self.visit(ctx.left)
         right_type = self.visit(ctx.right)
 
-        print(left_type, right_type)
-
         if right_type !=  left_type:
             error = genericError('Can only assign to two expressions with the same type', ctx.start.line)
             self.errors.append(error)
@@ -87,7 +83,7 @@ class Evaluator(DecafVisitor):
         value = type_enum.Error
 
         if not var:
-            error = notDefinedError('variable', var_name, ctx.start.line)
+            error = notDefinedError('Variable', var_name, ctx.start.line)
             self.errors.append(error)
             return type_enum.Error
         
@@ -111,9 +107,7 @@ class Evaluator(DecafVisitor):
             except ValueError:
                 pass
 
-            visit = self.visit(ctx.expr)
 
-            if visit != type_enum.Integer:
                 error = genericError('Index must be an integer', ctx.start.line)
                 self.errors.append(error)
                 return type_enum.Error

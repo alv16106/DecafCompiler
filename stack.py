@@ -16,7 +16,6 @@ class DecafStack:
         if self.items:
             return self.items[len(self.items)-1]
         else:
-            print("Stack is empty")
             return None
 
     def size(self):

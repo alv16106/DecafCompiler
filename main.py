@@ -7,6 +7,21 @@ from Grammar.DecafParser import DecafParser
 from CustomVisitor import CustomVisitor
 from errors import printErrors
 
+def comp(text):
+    input = InputStream(text)
+    lexer = DecafLexer(input)
+    stream = CommonTokenStream(lexer)
+    parser = DecafParser(stream)
+    tree = parser.program()
+
+    visitor = CustomVisitor()
+    visitor.visit(tree)
+
+    (view, _) = get_tree(tree)
+    view.render('tree.gv', "./uimamalona/static/img")
+
+    return visitor
+
 def main(argv):
     file = "tests/help.txt"
     if len(argv) > 1:
@@ -20,8 +35,8 @@ def main(argv):
     visitor = CustomVisitor()
     visitor.visit(tree)
 
-    """ (view, _) = get_tree(tree)
-    view.view() """
+    (view, _) = get_tree(tree)
+    view.render('tree.gv', "./uimamalona/static/img")
 
 if __name__ == '__main__':
     main(sys.argv)

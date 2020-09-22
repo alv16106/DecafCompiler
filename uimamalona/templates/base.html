@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <title>{% block title %}{% endblock %} - Sad Compiler</title>
+  </head>
+  <body>
+      <div class="content">
+          <div id="menu" class="topnav">
+              {% set navigation_bar = [
+                  ('/', 'code', 'Code'),
+                  ('/tree', 'tree', 'Tree'),
+                  ('/errors', 'errors', 'Errors'),
+                  ('/ic', 'ic', 'Intermidiate Code')
+              ] -%}
+              {% set active_page = active_page|default('code') -%}
+              {% for href, id, caption in navigation_bar %}
+                <a href="{{ href|e }}" {% if id == active_page %} class="active"{% endif %}>{{ caption|e }}</a>
+              {% endfor %}
+          </div>
+          <div id="content" class="main">
+              {% block content %}
+              {% endblock %}
+          </div>
+          <div class="footer">
+            {% block footer %}
+            &copy; Saddest compiler islas tiki tiki, por <a href="https://www.reddit.com/r/SegFault16106/">RODRIGO ALVARADO</a>.
+            {% endblock %}
+          </div>
+      </div>
+  </body>
+</html>

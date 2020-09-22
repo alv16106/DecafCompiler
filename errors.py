@@ -1,15 +1,15 @@
 def genericError(text, line):
-    error = 'ERROR: %s. Line %d' % (text, line)
+    error = 'ERROR: Line %d. %s.' % (line, text)
     print(error)
     return error
 
 def notDefinedError(t, name, line):
-    error = 'ERROR: %s %s does not exist. Line %d' % (t, name, line)
+    error = 'ERROR: Line %d. %s "%s" does not exist.' % (line, t, name)
     print(error)
     return error
 
 def expectedError(expected, got, line):
-    error = 'ERROR: expected %s. Got %s instead. Line %d' % (expected, got, line)
+    error = 'ERROR: Line %d. Expected %s. Got %s instead.' % (line, expected, got)
     print(error)
     return error
 
