@@ -4,6 +4,7 @@ import inspect
 from stack import DecafStack
 from errors import genericError
 from evaluador import Evaluator
+from ic import ICGenerator
 from symbolTable import *
 
 class CustomVisitor(DecafVisitor):
@@ -14,6 +15,7 @@ class CustomVisitor(DecafVisitor):
         self.anonCounter = 0
         self.offset = 0
         self.TypeValidator = Evaluator(scopes=self.scope)
+        self.icGenerator = ICGenerator(scopes=self.scope) 
 
     def error(self):
         self.flag = True
@@ -142,6 +144,8 @@ class CustomVisitor(DecafVisitor):
 
         # visit
         visit = self.visitChildren(ctx)
+        code = self.icGenerator.visitChildren(ctx)
+        print('El codigo es ', code)
 
         self.exitScope()
         
