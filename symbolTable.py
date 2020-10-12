@@ -19,7 +19,7 @@ class STable:
     def lookup(self, name):
         if name not in self.entrys:
             return self.parent and self.parent.lookup(name)
-        return self.entrys[name]
+        return self.entrys[name], self.name
         
     def add(self, symbol):
         self.entrys[symbol.name] = symbol

@@ -84,7 +84,7 @@ statement
     ;
 
 ifStmt
-    : 'if' '(' expression ')' block ('else' block)?
+    : 'if' '(' expression ')' ifblock=block ('else' elseblock=block)?
     ;
 
 whileStmt

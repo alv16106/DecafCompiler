@@ -879,6 +879,8 @@ public class DecafParser extends Parser {
 	}
 
 	public static class IfStmtContext extends ParserRuleContext {
+		public BlockContext ifblock;
+		public BlockContext elseblock;
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
@@ -910,7 +912,7 @@ public class DecafParser extends Parser {
 			setState(177);
 			match(T__14);
 			setState(178);
-			block();
+			((IfStmtContext)_localctx).ifblock = block();
 			setState(181);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -919,7 +921,7 @@ public class DecafParser extends Parser {
 				setState(179);
 				match(T__16);
 				setState(180);
-				block();
+				((IfStmtContext)_localctx).elseblock = block();
 				}
 			}
 

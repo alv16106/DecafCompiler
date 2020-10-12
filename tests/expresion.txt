@@ -1,6 +1,8 @@
 class Program {
     int a;
+    int b[5];
     void metodito() {
         a = (1 + 2) * 8;
+        b[a] = 2;
     }
 }

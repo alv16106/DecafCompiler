@@ -79,7 +79,7 @@ class Evaluator(DecafVisitor):
     def visitLocation(self, ctx:DecafParser.LocationExprContext):
         var_name = ctx.name.text
         scope = self.scopes.peek()
-        var = scope.lookup(var_name)
+        var, _scope = scope.lookup(var_name)
         value = type_enum.Error
 
         if not var:
@@ -196,3 +196,6 @@ class Evaluator(DecafVisitor):
             return type_enum.Error
 
         return type_enum.Integer
+    
+    def visitParentExpr(self, ctx:DecafParser.ParentExprContext):
+        return self.visit(ctx.expression())
