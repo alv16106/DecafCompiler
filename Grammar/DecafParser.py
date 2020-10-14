@@ -1021,6 +1021,8 @@ class DecafParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.decl = None # VarDeclarationContext
+            self.state = None # StatementContext
 
         def varDeclaration(self, i:int=None):
             if i is None:
@@ -1070,7 +1072,7 @@ class DecafParser ( Parser ):
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DecafParser.T__7) | (1 << DecafParser.T__8) | (1 << DecafParser.T__9) | (1 << DecafParser.T__10) | (1 << DecafParser.T__11))) != 0):
                 self.state = 146
-                self.varDeclaration()
+                localctx.decl = self.varDeclaration()
                 self.state = 151
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -1080,7 +1082,7 @@ class DecafParser ( Parser ):
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << DecafParser.T__2) | (1 << DecafParser.T__4) | (1 << DecafParser.T__12) | (1 << DecafParser.T__15) | (1 << DecafParser.T__17) | (1 << DecafParser.T__19) | (1 << DecafParser.T__21) | (1 << DecafParser.T__22) | (1 << DecafParser.T__35) | (1 << DecafParser.T__36) | (1 << DecafParser.ID) | (1 << DecafParser.NUM) | (1 << DecafParser.CHAR))) != 0):
                 self.state = 152
-                self.statement()
+                localctx.state = self.statement()
                 self.state = 157
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
@@ -1226,6 +1228,8 @@ class DecafParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.ifblock = None # BlockContext
+            self.elseblock = None # BlockContext
 
         def expression(self):
             return self.getTypedRuleContext(DecafParser.ExpressionContext,0)
@@ -1274,7 +1278,7 @@ class DecafParser ( Parser ):
             self.state = 177
             self.match(DecafParser.T__14)
             self.state = 178
-            self.block()
+            localctx.ifblock = self.block()
             self.state = 181
             self._errHandler.sync(self)
             _la = self._input.LA(1)
@@ -1282,7 +1286,7 @@ class DecafParser ( Parser ):
                 self.state = 179
                 self.match(DecafParser.T__16)
                 self.state = 180
-                self.block()
+                localctx.elseblock = self.block()
 
 
         except RecognitionException as re:

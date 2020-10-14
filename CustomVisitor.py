@@ -145,7 +145,7 @@ class CustomVisitor(DecafVisitor):
         # visit
         visit = self.visitChildren(ctx)
         code = self.icGenerator.visitChildren(ctx)
-        print('El codigo es ', code)
+        print('El codigo es ', code.code)
 
         self.exitScope()
         

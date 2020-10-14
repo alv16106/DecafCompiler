@@ -167,9 +167,6 @@ class  ICGenerator(DecafVisitor):
         harith.code = code
         harith.lt = new_temp
 
-        print(code)
-        print(self.used_temporals)
-
         return harith
 
     def visitArithOp(self, ctx:DecafParser.ArithOpContext):
@@ -218,9 +215,9 @@ class  ICGenerator(DecafVisitor):
 
         ifblock = self.visit(ctx.ifblock)
         code += ifblock.code
+        print(ifblock.code, 'codigo del if')
 
-
-        if ctx.elseblock():
+        if ctx.elseblock:
             endlabel = self.gen_label()
             code.append('goto '+ endlabel)
 
@@ -268,9 +265,11 @@ class  ICGenerator(DecafVisitor):
         var, scopeName = scope.lookup(var_name)
         tokenEXPR = ctx.expr
         tokenLOC = ctx.loc
+        locNode = ICNode('location')
 
         if not tokenEXPR and not tokenLOC:
-            return self.get_location(scopeName, var.offset)
+            locNode.lt = self.get_location(scopeName, var.offset)
+            return locNode
 
         #We have a list
         elif tokenEXPR and not tokenLOC:
@@ -278,10 +277,10 @@ class  ICGenerator(DecafVisitor):
             
             # EZ index is a number
             if (index := ctx.expr.getText()).isnumeric():
-                return self.get_location(scopeName, var.offset + size * int(index))
+                locNode.lt = self.get_location(scopeName, var.offset + size * int(index))
+                return locNode
 
             # Index is an expression
-            locNode = ICNode('location')
             code = []
             expr = self.visit(tokenEXPR)
             # 2 new temporals, to compute the new offset
@@ -327,5 +326,17 @@ class  ICGenerator(DecafVisitor):
         code.append(self.gen_code(loc, right.lt, '', ''))
 
         assignNode.code = code
-        print(code)
+        print('visiting assing for ', code)
         return assignNode
+    
+    def visitBlock(self, ctx:DecafParser.BlockContext):
+        blockNode = ICNode('none')
+        code = []
+
+        for statement in ctx.statement():
+            v = self.visitStatement(statement)
+            code += v.code if v else []
+        
+        blockNode.code = code
+
+        return blockNode

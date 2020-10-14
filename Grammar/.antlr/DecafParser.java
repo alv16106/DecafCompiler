@@ -698,6 +698,8 @@ public class DecafParser extends Parser {
 	}
 
 	public static class BlockContext extends ParserRuleContext {
+		public VarDeclarationContext decl;
+		public StatementContext state;
 		public List<VarDeclarationContext> varDeclaration() {
 			return getRuleContexts(VarDeclarationContext.class);
 		}
@@ -732,7 +734,7 @@ public class DecafParser extends Parser {
 				{
 				{
 				setState(146);
-				varDeclaration();
+				((BlockContext)_localctx).decl = varDeclaration();
 				}
 				}
 				setState(151);
@@ -746,7 +748,7 @@ public class DecafParser extends Parser {
 				{
 				{
 				setState(152);
-				statement();
+				((BlockContext)_localctx).state = statement();
 				}
 				}
 				setState(157);

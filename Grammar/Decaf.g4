@@ -70,7 +70,7 @@ parameterType
     ;
 
 block
-    : '{' (varDeclaration)* (statement)* '}' 
+    : '{' (decl=varDeclaration)* (state=statement)* '}' 
     ;
 
 statement

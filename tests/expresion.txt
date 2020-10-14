@@ -4,5 +4,8 @@ class Program {
     void metodito() {
         a = (1 + 2) * 8;
         b[a] = 2;
+        if(a){
+            a = 3
+        }
     }
 }
