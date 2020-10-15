@@ -136,6 +136,8 @@ class CustomVisitor(DecafVisitor):
         for param in ctx.parameter():
             values = self.visitParameter(param)
             s.addParam(values)
+            size = scope.typeTable.getSize(values.stype)
+            s.size += size
 
         scope.addType(s)
 

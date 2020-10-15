@@ -1,11 +1,12 @@
 class Program {
     int a;
     int b[5];
-    void metodito() {
+    int metodito() {
         a = (1 + 2) * 8;
         b[a] = 2;
         if(a){
             a = 3
         }
+        return a;
     }
 }

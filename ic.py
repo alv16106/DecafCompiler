@@ -1,8 +1,9 @@
+from functools import reduce
 from Grammar.DecafVisitor import DecafVisitor
 from Grammar.DecafParser import DecafParser
 
 from symbolTable import type_enum
-from icnode import ICNode, TEMPORALS
+from icnode import ICNode, TEMPORALS, RETURN_REGISTER
 
 class  ICGenerator(DecafVisitor):
     def __init__(self, scopes):
@@ -340,3 +341,38 @@ class  ICGenerator(DecafVisitor):
         blockNode.code = code
 
         return blockNode
+
+    # Expressions
+    def visitMethodCall(self, ctx:DecafParser.MethodCallExprContext):
+        methodCallNode = ICNode('call')
+        code = []
+
+        method_label = str(ctx.ID())
+        scope = self.scopes.peek()
+        method = scope.typeExists(method_label, 'method')
+
+        for argument in ctx.arg():
+            argNode = self.visitArg(argument)
+            code +=  argNode.code
+            code.append('PushParam' + code.lt)
+        
+        code.append('LCall ' + method_label)
+
+        code.append('PopParams ' + str(method.size))
+
+        methodCallNode.lt = RETURN_REGISTER
+
+        return methodCallNode
+
+    def visitReturnStmt(self, ctx:DecafParser.ReturnStmtContext):
+        expr = self.visit(ctx.expression())
+        returnNode = ICNode('return')
+        code = []
+        
+        code += expr.code
+        code.append(self.gen_code(RETURN_REGISTER, expr.lt, '', ''))
+        code.append('BX LR')
+
+        returnNode.code = code
+
+        return returnNode
