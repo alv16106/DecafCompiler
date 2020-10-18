@@ -6,8 +6,10 @@ from symbolTable import type_enum
 from icnode import ICNode, TEMPORALS, RETURN_REGISTER
 
 class  ICGenerator(DecafVisitor):
-    def __init__(self, scopes):
+    def __init__(self, scopes, saved):
         self.scopes = scopes
+        self.saved = saved
+        self.anonCounter = 0
         self.label = 0
         self.used_temporals = set()
         self.available_temporals = set(TEMPORALS)
@@ -21,6 +23,14 @@ class  ICGenerator(DecafVisitor):
         self.used_temporals.add(e)
         return e
     
+    def enterScope(self, name):
+        entry = self.saved.get(name)
+        self.scopes.push(entry)
+    
+    def exitScope(self):
+        self.scopes.pop()
+        
+    
     def free_temporal(self, temporal):
         if temporal in self.used_temporals:
             self.used_temporals.discard(temporal)
@@ -31,6 +41,10 @@ class  ICGenerator(DecafVisitor):
     
     def get_location(self, scope, offset):
         return '%s[%s]' % (scope.capitalize(), str(offset))
+    
+    # Visit a parse tree produced by DecafParser#program.
+    def visitProgram(self, ctx:DecafParser.ProgramContext):
+        return self.visitChildren(ctx)
     
     # Literals return just their string
     def visitInt_literal(self, ctx:DecafParser.Int_literalContext):
@@ -200,6 +214,8 @@ class  ICGenerator(DecafVisitor):
 
     # ifs and whiles
     def visitIfStmt(self, ctx:DecafParser.IfStmtContext):
+        self.enterScope('ifblock' + str(self.anonCounter))
+        self.anonCounter += 1
 
         ifNode = ICNode('if')
         code = []
@@ -232,9 +248,14 @@ class  ICGenerator(DecafVisitor):
 
         ifNode.code = code
 
+        self.exitScope()
+
         return ifNode
 
     def visitWhileStmt(self, ctx:DecafParser.WhileStmtContext):
+        self.enterScope('whileblock' + str(self.anonCounter))
+        self.anonCounter += 1
+
         whileNode = ICNode('while')
         code = []
 
@@ -257,6 +278,8 @@ class  ICGenerator(DecafVisitor):
 
         whileNode.code = code
         
+        self.exitScope()
+
         return whileNode
     
     # visit locations
@@ -349,18 +372,20 @@ class  ICGenerator(DecafVisitor):
 
         method_label = str(ctx.ID())
         scope = self.scopes.peek()
+        print(scope, 'METHOD SCOPE')
         method = scope.typeExists(method_label, 'method')
 
         for argument in ctx.arg():
             argNode = self.visitArg(argument)
             code +=  argNode.code
-            code.append('PushParam' + code.lt)
+            code.append('PushParam ' + argNode.lt)
         
         code.append('LCall ' + method_label)
 
         code.append('PopParams ' + str(method.size))
 
         methodCallNode.lt = RETURN_REGISTER
+        methodCallNode.code = code
 
         return methodCallNode
 
@@ -376,3 +401,20 @@ class  ICGenerator(DecafVisitor):
         returnNode.code = code
 
         return returnNode
+
+    def visitMethodDeclaration(self, ctx:DecafParser.MethodDeclarationContext):
+        name = str(ctx.ID())
+        code = []
+
+        scope = self.scopes.peek()
+        method = scope.typeExists(name, 'method')
+
+        code.append('BeginFunc ' + str(method.size))
+        code.append(name+':')
+        self.enterScope(name)
+        visit = self.visitChildren(ctx)
+        self.exitScope()
+
+        code += visit.code
+
+        print(code)

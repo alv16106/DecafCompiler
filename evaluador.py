@@ -151,7 +151,7 @@ class Evaluator(DecafVisitor):
         left_type = self.visit(ctx.left)
         right_type = self.visit(ctx.right)
 
-        if right_type != type_enum.Integer or left_type != type_enum.Integer:
+        if right_type != type_enum.Boolean or left_type != type_enum.Boolean:
             error = expectedError(type_enum.Boolean, '%s, %s' % (left_type, right_type) , ctx.start.line)
             self.errors.append(error)
             return type_enum.Error

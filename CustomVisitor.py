@@ -4,18 +4,17 @@ import inspect
 from stack import DecafStack
 from errors import genericError
 from evaluador import Evaluator
-from ic import ICGenerator
 from symbolTable import *
 
 class CustomVisitor(DecafVisitor):
 
     def __init__(self):
         self.scope = DecafStack()
+        self.saved = {}
         self.errors = []
         self.anonCounter = 0
         self.offset = 0
         self.TypeValidator = Evaluator(scopes=self.scope)
-        self.icGenerator = ICGenerator(scopes=self.scope) 
 
     def error(self):
         self.flag = True
@@ -30,7 +29,9 @@ class CustomVisitor(DecafVisitor):
         if self.scope.isEmpty():
             pass
         else:
-            return self.scope.pop()
+            popped = self.scope.pop()
+            self.saved[popped.name] = popped
+            return popped
 
     # getError method to return error message as string
     def getError(self, name):
@@ -136,8 +137,8 @@ class CustomVisitor(DecafVisitor):
         for param in ctx.parameter():
             values = self.visitParameter(param)
             s.addParam(values)
-            size = scope.typeTable.getSize(values.stype)
-            s.size += size
+            """ size = scope.typeTable.getSize(values.stype)
+            s.size += size """
 
         scope.addType(s)
 
@@ -146,8 +147,6 @@ class CustomVisitor(DecafVisitor):
 
         # visit
         visit = self.visitChildren(ctx)
-        code = self.icGenerator.visitChildren(ctx)
-        print('El codigo es ', code.code)
 
         self.exitScope()
         
@@ -160,9 +159,10 @@ class CustomVisitor(DecafVisitor):
 
         type_text = ctx.vType.getText()
 
-        vartype = scope.typeExists(type_text).name
+        vartype = scope.typeExists(type_text)
         
-        s = Symbol(name, vartype, self.offset, param=True)
+        s = Symbol(name, vartype.name, self.offset, param=True)
+        self.offset += vartype.size
 
         scope.add(s)
 

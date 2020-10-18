@@ -5,6 +5,7 @@ from printer import get_tree
 from Grammar.DecafLexer import DecafLexer
 from Grammar.DecafParser import DecafParser
 from CustomVisitor import CustomVisitor
+from ic import ICGenerator
 from errors import printErrors
 
 def comp(text):
@@ -16,6 +17,9 @@ def comp(text):
 
     visitor = CustomVisitor()
     visitor.visit(tree)
+
+    codeGenerator = ICGenerator(visitor.scope, visitor.saved)
+    codeGenerator.visit(tree)
 
     (view, _) = get_tree(tree)
     view.render('tree.gv', "./uimamalona/static/img")
