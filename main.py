@@ -24,7 +24,7 @@ def comp(text):
     (view, _) = get_tree(tree)
     view.render('tree.gv', "./uimamalona/static/img")
 
-    return visitor
+    return visitor, codeGenerator
 
 def main(argv):
     file = "tests/help.txt"

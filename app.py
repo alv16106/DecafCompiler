@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session
 from main import comp
+from icnode import printable_code
 
 app = Flask(__name__, template_folder='./uimamalona/templates', static_folder="./uimamalona/static")
 app.secret_key = "yeahbuddy"
@@ -15,9 +16,9 @@ def code():
 def build():
     code = request.form['src']
     session["code"] = code
-    visited = comp(code)
+    visited, cg = comp(code)
     session["errors"] = visited.TypeValidator.errors
-    print(session['errors'])
+    session["ic"] = printable_code(cg.code)
     return render_template('code.html', code=code)
 
 @app.route('/tree')
@@ -28,3 +29,8 @@ def tree():
 def errors():
     e = session.get('errors')
     return render_template('errors.html', errors=e)
+
+@app.route('/ic')
+def ic():
+    e = session.get('ic')
+    return render_template('ic.html', ic=e)

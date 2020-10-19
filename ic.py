@@ -13,6 +13,7 @@ class  ICGenerator(DecafVisitor):
         self.label = 0
         self.used_temporals = set()
         self.available_temporals = set(TEMPORALS)
+        self.code = []
     
     def gen_label(self):
         self.label += 1
@@ -225,6 +226,7 @@ class  ICGenerator(DecafVisitor):
         expr = self.visit(ctx.expression()) 
 
         condition = expr.lt
+        self.free_temporal(condition)
 
         code += expr.code
 
@@ -232,7 +234,6 @@ class  ICGenerator(DecafVisitor):
 
         ifblock = self.visit(ctx.ifblock)
         code += ifblock.code
-        print(ifblock.code, 'codigo del if')
 
         if ctx.elseblock:
             endlabel = self.gen_label()
@@ -265,6 +266,8 @@ class  ICGenerator(DecafVisitor):
         expr = self.visit(ctx.expression())
 
         condition = expr.lt
+        self.free_temporal(condition)
+
         code.append(conditionlabel)
         code += expr.code
 
@@ -348,9 +351,9 @@ class  ICGenerator(DecafVisitor):
             loc = destination.lt
         
         code.append(self.gen_code(loc, right.lt, '', ''))
+        self.free_temporal(right.lt)
 
         assignNode.code = code
-        print('visiting assing for ', code)
         return assignNode
     
     def visitBlock(self, ctx:DecafParser.BlockContext):
@@ -365,6 +368,10 @@ class  ICGenerator(DecafVisitor):
 
         return blockNode
 
+    def visitStatement(self, ctx:DecafParser.StatementContext):
+        vi = self.visit(ctx.getChild(0))
+        return vi
+
     # Expressions
     def visitMethodCall(self, ctx:DecafParser.MethodCallExprContext):
         methodCallNode = ICNode('call')
@@ -372,13 +379,13 @@ class  ICGenerator(DecafVisitor):
 
         method_label = str(ctx.ID())
         scope = self.scopes.peek()
-        print(scope, 'METHOD SCOPE')
         method = scope.typeExists(method_label, 'method')
 
         for argument in ctx.arg():
             argNode = self.visitArg(argument)
             code +=  argNode.code
             code.append('PushParam ' + argNode.lt)
+            self.free_temporal(argNode.lt)
         
         code.append('LCall ' + method_label)
 
@@ -396,6 +403,7 @@ class  ICGenerator(DecafVisitor):
         
         code += expr.code
         code.append(self.gen_code(RETURN_REGISTER, expr.lt, '', ''))
+        self.free_temporal(expr.lt)
         code.append('BX LR')
 
         returnNode.code = code
@@ -416,5 +424,11 @@ class  ICGenerator(DecafVisitor):
         self.exitScope()
 
         code += visit.code
+        self.free_temporal(visit.lt)
+        code.append('\n')
 
-        print(code)
+        self.code += code
+
+        print(self.used_temporals)
+
+        return code
