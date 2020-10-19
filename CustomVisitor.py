@@ -135,10 +135,10 @@ class CustomVisitor(DecafVisitor):
         s = TypeItem(name, 0, 'method', {}, scope.typeExists(returnType).name)
         
         for param in ctx.parameter():
-            values = self.visitParameter(param)
+            values, size = self.visitParameter(param)
             s.addParam(values)
-            """ size = scope.typeTable.getSize(values.stype)
-            s.size += size """
+            # size = scope.typeTable.getSize(values.stype)
+            s.size += size
 
         scope.addType(s)
 
@@ -166,7 +166,7 @@ class CustomVisitor(DecafVisitor):
 
         scope.add(s)
 
-        return s
+        return s, vartype.size
 
     # Visit a parse tree produced by DecafParser#ifStmt.
     def visitIfStmt(self, ctx:DecafParser.IfStmtContext):

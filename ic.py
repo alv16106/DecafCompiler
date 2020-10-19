@@ -17,7 +17,7 @@ class  ICGenerator(DecafVisitor):
     
     def gen_label(self):
         self.label += 1
-        return 'label%d' % self.label
+        return 'label%d:' % self.label
     
     def get_temporal(self):
         e = self.available_temporals.pop()
